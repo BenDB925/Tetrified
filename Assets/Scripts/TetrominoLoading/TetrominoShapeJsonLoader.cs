@@ -1,21 +1,18 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using Newtonsoft.Json;
-using Tetrified.Scripts.Utility;
 using UnityEngine;
 
 namespace Tetrified.Scripts.TetrominoLoading
 {
-    public class TetrominoShapeJsonLoader : Singleton<TetrominoShapeJsonLoader>
+    public class TetrominoShapeJsonLoader : Utility.Singleton<TetrominoShapeJsonLoader>
     {
         private TetrominoShapeJsonLoader() { }
 
         [SerializeField]
         private string _jsonFilePath;
 
-        private int[][,] _allPotentialShapes;
+        private TetrominoData[] _allPotentialShapes;
 
         [Serializable]
         public class TetrominoShapeList
@@ -27,6 +24,8 @@ namespace Tetrified.Scripts.TetrominoLoading
         public class TetrominoShape
         {
             public List<int[]> shape;
+            public string color;
+            public TetrominoData.TetrominoName name;
         }
 
         // Loads the Tetris piece shapes from the specified JSON file
@@ -36,7 +35,7 @@ namespace Tetrified.Scripts.TetrominoLoading
             string json = File.ReadAllText(fileName);
             TetrominoShapeList tetrominoShapeList = Newtonsoft.Json.JsonConvert.DeserializeObject<TetrominoShapeList>(json);
 
-            _allPotentialShapes = new int[tetrominoShapeList.tetrominoShapes.Length][,];
+            _allPotentialShapes = new TetrominoData[tetrominoShapeList.tetrominoShapes.Length];
 
             for (int i = 0; i < tetrominoShapeList.tetrominoShapes.Length; i++)
             {
@@ -53,11 +52,28 @@ namespace Tetrified.Scripts.TetrominoLoading
                     }
                 }
 
-                _allPotentialShapes[i] = convertedShape;
+                Color color;
+                bool didParse = ColorUtility.TryParseHtmlString(shape.color, out color);
+
+                if (didParse == false)
+                {
+                    Debug.LogError("error reading color value from " + fileName + ", color attempted to read: " + shape.color);
+                }
+
+                TetrominoData.TetrominoName name = shape.name;
+
+                TetrominoData data = new TetrominoData()
+                {
+                    _color = color,
+                    _shape = convertedShape,
+                    _name = name
+                };
+
+                _allPotentialShapes[i] = data;
             }
         }
 
-        public int[,] GetRandomShapeFromJson()
+        public TetrominoData GetRandomShapeFromJson()
         {
             if (_allPotentialShapes == null)
             {
@@ -65,9 +81,7 @@ namespace Tetrified.Scripts.TetrominoLoading
             }
 
             int randomShapeIndex = UnityEngine.Random.Range(0, _allPotentialShapes.Length);
-            int[,] randomShape = _allPotentialShapes[randomShapeIndex];
-
-            return randomShape;
+            return _allPotentialShapes[randomShapeIndex];
         }
     }
 }

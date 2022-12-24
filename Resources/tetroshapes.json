@@ -6,37 +6,49 @@
       "shape": [
         [1, 1, 1],
         [0, 1, 0]
-      ]
+      ],
+      "color" : "#800080",
+      "tetrominoName" : "T"
     },
     {
       "shape": [
         [1, 0, 0],
         [1, 1, 1]
-      ]
+      ],
+      "color" : "#0000ff",
+      "tetrominoName" : "L"
     },
     {
       "shape": [
         [0, 0, 1],
         [1, 1, 1]
-      ]
+      ],
+      "color" : "#ff7f00",
+      "tetrominoName" : "L"
     },
     {
       "shape": [
         [1, 1],
         [1, 1]
-      ]
+      ],
+      "color" : "#ffff00",
+      "tetrominoName" : "Square"
     },
     {
       "shape": [
         [0, 1, 1],
         [1, 1, 0]
-      ]
+      ],
+      "color" : "#00ff00",
+      "tetrominoName" : "Skew"
     },
     {
       "shape": [
         [1, 1, 0],
         [0, 1, 1]
-      ]
+      ],
+      "color" : "#ff0000",
+      "tetrominoName" : "Skew"
     },
     {
       "shape": [
@@ -44,7 +56,9 @@
         [1],
         [1],
         [1]
-      ]
+      ],
+      "color" : "#00ffff",
+      "tetrominoName" : "Straight"
     }
   ]
 }
