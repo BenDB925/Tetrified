@@ -23,8 +23,11 @@ namespace Tetrified.Scripts.Gameplay
         public delegate void PlacementEvent();
         public static event PlacementEvent CantPlaceTetromino;
 
-        public Tetromino()
+        private TetrisGridData _gridData;
+
+        public Tetromino(TetrisGridData gridData)
         {
+            _gridData = gridData;
             NewPiece();
         }
 
@@ -35,9 +38,9 @@ namespace Tetrified.Scripts.Gameplay
             TetrominoData randomShape = TetrominoShapeJsonLoader.Instance.GetRandomShapeFromJson();
 
             // Set the initial position and rotation of the Tetris piece
-            int boardWidth = TetrisGridData.Instance._width;
+            int boardWidth = _gridData._width;
             int midPointX = (boardWidth / 2) - (randomShape._shape.GetLength(0) / 2);
-            int topY = TetrisGridData.Instance._height - randomShape._shape.GetLength(1);
+            int topY = _gridData._height - randomShape._shape.GetLength(1);
 
             bool isGameOver = IsValidMovement(midPointX, topY, randomShape._shape) == false;
 
@@ -117,7 +120,7 @@ namespace Tetrified.Scripts.Gameplay
                 Debug.Log(_name + " hit bottom, at y pos: " + _posInGrid.y);
 
                 // The Tetris piece can't be moved down, so it has landed
-                TetrisGridData.Instance.AddPiece(this);
+                _gridData.AddPiece(this);
                 NewPiece();
             }
         }
@@ -126,7 +129,7 @@ namespace Tetrified.Scripts.Gameplay
         private bool IsValidMovement(int newX, int newY, int[,] shape)
         {
             bool isAtTheBottom = newY < 0;
-            bool isOutOfXBounds = newX < 0 || newX + shape.GetLength(0) >= TetrisGridData.Instance._width;
+            bool isOutOfXBounds = newX < 0 || newX + shape.GetLength(0) >= _gridData._width;
 
             // Check if the Tetris piece is out of bounds
             if (isAtTheBottom || isOutOfXBounds)
@@ -140,7 +143,7 @@ namespace Tetrified.Scripts.Gameplay
                 for (int y = 0; y < shape.GetLength(1); y++)
                 {
                     bool isPartOfTetromino = shape[x, y] != 0;
-                    TetrominoData[,] grid = TetrisGridData.Instance.GetGrid();
+                    TetrominoData[,] grid = _gridData.GetGrid();
                     TetrominoData tile = grid[newX + x, newY + y];
 
                     if (isPartOfTetromino && tile._shape != null)
@@ -191,9 +194,9 @@ namespace Tetrified.Scripts.Gameplay
                 for (int y = 0; y < rotatedShape.GetLength(1); y++)
                 {
                     bool isPartOfTheShape = rotatedShape[x, y] != 0;
-                    bool isOutOfXBounds = _posInGrid.x + x < 0 || _posInGrid.x + x >= TetrisGridData.Instance._width;
-                    bool isOutOfYBounds = _posInGrid.y + y < 0 || _posInGrid.y + y >= TetrisGridData.Instance.GridHeightWithBufferRows;
-                    bool isTileAlreadyOccupied = TetrisGridData.Instance.GetGrid()[_posInGrid.x + x, _posInGrid.y + y]._shape != null;
+                    bool isOutOfXBounds = _posInGrid.x + x < 0 || _posInGrid.x + x >= _gridData._width;
+                    bool isOutOfYBounds = _posInGrid.y + y < 0 || _posInGrid.y + y >= _gridData.GridHeightWithBufferRows;
+                    bool isTileAlreadyOccupied = _gridData.GetGrid()[_posInGrid.x + x, _posInGrid.y + y]._shape != null;
 
                     if (isPartOfTheShape && (isOutOfXBounds || isOutOfYBounds || isTileAlreadyOccupied))
                     {

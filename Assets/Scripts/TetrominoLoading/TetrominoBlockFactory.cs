@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Tetrified.Scripts.Gameplay;
 using Tetrified.Scripts.Utility;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,8 +12,8 @@ public class TetrominoBlockFactory : Singleton<TetrominoBlockFactory>
     // The pool of Tetronimo blocks
     private List<GameObject> _blockPool;
 
-    //the percentage of the grid that will be initially instantiated. ie. 0.4 means 40% of all potential blocks will be created
-    const float _percentageOfGridToInitiallyPool = 0.4f;
+    //the initial size of the pool, actual size of the pool will be increased as needed
+    const int InitialPoolSize = 100;
 
     public List<GameObject> BlockPool
     {
@@ -40,10 +39,7 @@ public class TetrominoBlockFactory : Singleton<TetrominoBlockFactory>
         // Initialize the block pool
         BlockPool = new List<GameObject>();
 
-        int totalNumberOfBlocks = TetrisGridData.Instance._width * TetrisGridData.Instance.GridHeightWithBufferRows;
-        int blockPoolSize = Mathf.CeilToInt(totalNumberOfBlocks * _percentageOfGridToInitiallyPool);
-
-        for (int i = 0; i < blockPoolSize; i++)
+        for (int i = 0; i < InitialPoolSize; i++)
         {
             GameObject block = Instantiate(_blockPrefab);
             block.transform.SetParent(transform);

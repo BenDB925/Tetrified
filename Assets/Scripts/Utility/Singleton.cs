@@ -30,6 +30,7 @@ namespace Tetrified.Scripts.Utility
             if (_instance == null)
             {
                 _instance = this as T;
+                gameObject.transform.SetParent(null);
                 DontDestroyOnLoad(gameObject);
             }
             else if (_instance != this)

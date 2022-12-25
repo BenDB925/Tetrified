@@ -1,11 +1,15 @@
 using Tetrified.Scripts.Gameplay;
 using Tetrified.Scripts.Utility;
+using Tetromino.Scripts.Gameplay;
 using UnityEngine;
 
 namespace Tetrified.Scripts.Gameplay
 {
     public class TetrisBoardLogicManager : MonoBehaviour
     {
+        [SerializeField]
+        TetrisGridData _gridData;
+
         private Tetromino _fallingPiece;
 
         // the higher the value, the faster the tetronimo falls
@@ -23,7 +27,7 @@ namespace Tetrified.Scripts.Gameplay
             {
                 if (_fallingPiece == null)
                 {
-                    _fallingPiece = new Tetromino();
+                    _fallingPiece = new Tetromino(_gridData);
                 }
                 return _fallingPiece;
             }
@@ -49,6 +53,21 @@ namespace Tetrified.Scripts.Gameplay
             {
                 FallingPiece.MoveDown();
                 _timeSinceFall = 0;
+            }
+        }
+
+        public void TakeInput(InputManager.Action action)
+        {
+            switch (action)
+            {
+                case InputManager.Action.MoveTetronimoLeft:
+                    _fallingPiece.MoveLeft();
+                    break;
+                case InputManager.Action.MoveTetronimoRight:
+                    _fallingPiece.MoveRight();
+                    break;
+                default:
+                    break;
             }
         }
 

@@ -4,11 +4,10 @@ using UnityEngine;
 
 namespace Tetrified.Scripts.Gameplay
 {
-    public class TetrisGridData : Singleton<TetrisGridData>
+    public class TetrisGridData : MonoBehaviour
     {
-        protected override void Awake()
+        private void Awake()
         {
-            base.Awake();
             _grid = new TetrominoData[_width, GridHeightWithBufferRows];
             for (int i = 0; i < _width; i++)
             {
