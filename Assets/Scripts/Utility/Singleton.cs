@@ -1,3 +1,4 @@
+using Tetrified.Scripts.Gameplay;
 using UnityEngine;
 
 namespace Tetrified.Scripts.Utility
@@ -31,7 +32,7 @@ namespace Tetrified.Scripts.Utility
                 _instance = this as T;
                 DontDestroyOnLoad(gameObject);
             }
-            else
+            else if (_instance != this)
             {
                 Destroy(gameObject);
             }
