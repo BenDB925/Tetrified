@@ -40,7 +40,7 @@ public class TetrominoBlockFactory : Singleton<TetrominoBlockFactory>
         // Initialize the block pool
         BlockPool = new List<GameObject>();
 
-        int totalNumberOfBlocks = TetrisGridData.Instance._width * TetrisGridData.Instance._height;
+        int totalNumberOfBlocks = TetrisGridData.Instance._width * TetrisGridData.Instance.GridHeightWithBufferRows;
         int blockPoolSize = Mathf.CeilToInt(totalNumberOfBlocks * _percentageOfGridToInitiallyPool);
 
         for (int i = 0; i < blockPoolSize; i++)
@@ -53,7 +53,7 @@ public class TetrominoBlockFactory : Singleton<TetrominoBlockFactory>
     }
 
     // Gets from the pool, or instantiates a Tetronimo block at the specified position and color
-    public GameObject GetOrInstantiateBlock(Vector3 position, Vector2 size, Color color)
+    public GameObject GetOrInstantiateBlock(Vector3 position, Vector2 size, Color color, Transform parent)
     {
         // Check if there are any blocks available in the pool
         if (BlockPool.Count > 0)
@@ -62,7 +62,7 @@ public class TetrominoBlockFactory : Singleton<TetrominoBlockFactory>
             GameObject block = BlockPool[0];
             BlockPool.RemoveAt(0);
 
-            SetBlockProperties(block, position, size, color);
+            SetBlockProperties(block, position, size, color, parent);
 
             // Activate the block and return it
             block.SetActive(true);
@@ -72,17 +72,17 @@ public class TetrominoBlockFactory : Singleton<TetrominoBlockFactory>
         {
             // There are no blocks available in the pool, so instantiate a new block
             GameObject block = Instantiate(_blockPrefab);
-            SetBlockProperties(block, position, size, color);
-            block.transform.SetParent(transform);
+            SetBlockProperties(block, position, size, color, parent);
             return block;
         }
     }
 
-    private void SetBlockProperties(GameObject block, Vector3 pos, Vector2 size, Color color)
+    private void SetBlockProperties(GameObject block, Vector3 pos, Vector2 size, Color color, Transform parent)
     {
         // Set the block's position and color
-        block.transform.position = pos;
-        block.GetComponent<Image>().material.color = color;
+        block.transform.SetParent(parent);
+        block.transform.localPosition = pos;
+        block.GetComponent<Image>().color = color;
         block.GetComponent<RectTransform>().sizeDelta = size;
     }
 

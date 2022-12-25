@@ -28,10 +28,11 @@ namespace Tetrified.Scripts.Gameplay
 
         private void Start()
         {
-            _blockDimensions = _gameboardDimensions / _gridData._width;
+            _blockDimensions = _gameboardDimensions / new Vector2Int(_gridData._width, _gridData._height);
             _fallingPiece = _logicManager.FallingPiece;
             _fallingTetrominoBlocks = new List<GameObject>();
             _landedTetrominoBlocks = new GameObject[_gridData._width, _gridData._height];
+            GetComponent<RectTransform>().sizeDelta = _gameboardDimensions;
         }
 
         void Update()
@@ -76,7 +77,7 @@ namespace Tetrified.Scripts.Gameplay
         {
             for (int i = 0; i < _gridData._width; i++)
             {
-                for (int j = 0; j < _gridData._height; j++)
+                for (int j = 0; j < _gridData.GridHeightWithBufferRows; j++)
                 {
                     TetrominoData dataForCurrentTile = _gridData.GetGrid()[i, j];
 
@@ -98,8 +99,7 @@ namespace Tetrified.Scripts.Gameplay
                                               coord.y * _blockDimensions.y,
                                                  0);
 
-            GameObject newBlock = TetrominoBlockFactory.Instance.GetOrInstantiateBlock(relativePos, _blockDimensions, color);
-            Debug.Log(newBlock.name + " at " + newBlock.transform.position.y);
+            GameObject newBlock = TetrominoBlockFactory.Instance.GetOrInstantiateBlock(relativePos, _blockDimensions, color, transform);
 
             if (isFallingBlock)
             {

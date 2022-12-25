@@ -9,10 +9,10 @@ namespace Tetrified.Scripts.Gameplay
         protected override void Awake()
         {
             base.Awake();
-            _grid = new TetrominoData[_width, _height];
+            _grid = new TetrominoData[_width, GridHeightWithBufferRows];
             for (int i = 0; i < _width; i++)
             {
-                for (int j = 0; j < _height; j++)
+                for (int j = 0; j < GridHeightWithBufferRows; j++)
                 {
                     _grid[i, j] = new TetrominoData()
                     {
@@ -25,7 +25,18 @@ namespace Tetrified.Scripts.Gameplay
         public int _width;
         public int _height;
 
+        private const int ExtraBufferRows = 10;
+
         private TetrominoData[,] _grid;
+
+        //allows tetronimos to spawn half way off screen to better communicate game over
+        public int GridHeightWithBufferRows
+        {
+            get
+            {
+                return _height + ExtraBufferRows;
+            }
+        }
 
 
         // Adds the blocks of the specified Tetris piece to the grid
@@ -52,7 +63,7 @@ namespace Tetrified.Scripts.Gameplay
         // Removes any completed rows from the grid
         public void RemoveCompletedRows()
         {
-            for (int r = 0; r < _height; r++)
+            for (int r = 0; r < GridHeightWithBufferRows; r++)
             {
                 // Check if the current row is completed
                 bool completed = true;

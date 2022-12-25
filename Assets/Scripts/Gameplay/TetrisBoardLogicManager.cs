@@ -15,6 +15,8 @@ namespace Tetrified.Scripts.Gameplay
 
         private float _timeSinceFall;
 
+        private bool _paused;
+
         public Tetromino FallingPiece
         {
             get
@@ -28,9 +30,17 @@ namespace Tetrified.Scripts.Gameplay
             set => _fallingPiece = value;
         }
 
+        private void Start()
+        {
+            Tetromino.CantPlaceTetromino += OnGameOver;
+        }
+
         private void Update()
         {
-            _timeSinceFall += Time.deltaTime;
+            if (_paused == false)
+            {
+                _timeSinceFall += Time.deltaTime;
+            }
 
             const float NormalFallSpeed = 1.0f;
             float adjustedSpeed = Mathf.Max(0, NormalFallSpeed - ((0.1f * _tetrominoFallSpeed) * NormalFallSpeed));
@@ -40,6 +50,11 @@ namespace Tetrified.Scripts.Gameplay
                 FallingPiece.MoveDown();
                 _timeSinceFall = 0;
             }
+        }
+
+        private void OnGameOver()
+        {
+            _paused = true;
         }
     }
 }
