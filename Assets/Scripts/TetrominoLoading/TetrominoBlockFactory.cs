@@ -14,6 +14,7 @@ public class TetrominoBlockFactory : Singleton<TetrominoBlockFactory>
 
     //the initial size of the pool, actual size of the pool will be increased as needed
     const int InitialPoolSize = 100;
+    private const string MaterialBlockColorVar = "_BlockColor";
 
     public List<GameObject> BlockPool
     {
@@ -78,7 +79,8 @@ public class TetrominoBlockFactory : Singleton<TetrominoBlockFactory>
         // Set the block's position and color
         block.transform.SetParent(parent);
         block.transform.localPosition = pos;
-        block.GetComponent<Image>().color = color;
+        block.transform.localScale = Vector3.one;
+        block.transform.GetChild(0).GetComponent<Image>().color = color;
         block.GetComponent<RectTransform>().sizeDelta = size;
     }
 
