@@ -25,7 +25,6 @@ namespace Tetrified.Scripts.TetrominoLoading
         {
             public List<int[]> shape;
             public string color;
-            public TetrominoData.TetrominoName name;
         }
 
         // Loads the Tetris piece shapes from the specified JSON file
@@ -60,13 +59,10 @@ namespace Tetrified.Scripts.TetrominoLoading
                     Debug.LogError("error reading color value from " + fileName + ", color attempted to read: " + shape.color);
                 }
 
-                TetrominoData.TetrominoName name = shape.name;
-
                 TetrominoData data = new TetrominoData()
                 {
                     _color = color,
                     _shape = convertedShape,
-                    _name = name
                 };
 
                 _allPotentialShapes[i] = data;

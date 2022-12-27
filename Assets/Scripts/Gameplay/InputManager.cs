@@ -65,6 +65,7 @@ namespace Tetromino.Scripts.Gameplay
                     break;
                 case Action.RotateClockwise:
                     // Rotate the Tetris piece clockwise
+                    GameManager.Instance.HandleInputActions(Action.RotateClockwise);
                     break;
                 case Action.RotateCounterclockwise:
                     // Rotate the Tetris piece counterclockwise

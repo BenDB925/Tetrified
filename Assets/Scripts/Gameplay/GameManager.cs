@@ -39,6 +39,12 @@ namespace Tetrified.Scripts.Gameplay
                         _tetrisBoards[_currentActiveBoard].TakeInput(InputManager.Action.MoveTetronimoRight);
                     }
                     break;
+                case InputManager.Action.RotateClockwise:
+                    if (_tetrisBoards?.Count > _currentActiveBoard)
+                    {
+                        _tetrisBoards[_currentActiveBoard].TakeInput(InputManager.Action.RotateClockwise);
+                    }
+                    break;
 
                 default:
                     break;

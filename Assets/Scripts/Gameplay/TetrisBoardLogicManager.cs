@@ -10,6 +10,9 @@ namespace Tetrified.Scripts.Gameplay
         [SerializeField]
         TetrisGridData _gridData;
 
+        [SerializeField]
+        TetrisGridRenderer _gridRenderer;
+
         private Tetromino _fallingPiece;
 
         // the higher the value, the faster the tetronimo falls
@@ -37,6 +40,7 @@ namespace Tetrified.Scripts.Gameplay
         private void Start()
         {
             Tetromino.CantPlaceTetromino += OnGameOver;
+            Tetromino.TetronimoLanded += OnTetronimoLanded;
         }
 
         private void Update()
@@ -66,6 +70,9 @@ namespace Tetrified.Scripts.Gameplay
                 case InputManager.Action.MoveTetronimoRight:
                     _fallingPiece.MoveRight();
                     break;
+                case InputManager.Action.RotateClockwise:
+                    _fallingPiece.Rotate();
+                    break;
                 default:
                     break;
             }
@@ -74,6 +81,17 @@ namespace Tetrified.Scripts.Gameplay
         private void OnGameOver()
         {
             _paused = true;
+        }
+
+        private void OnTetronimoLanded()
+        {
+            _fallingPiece.NewPiece();
+            bool didCompleteRow = _gridData.RemoveCompletedRows();
+
+            if (didCompleteRow)
+            {
+                _gridRenderer.UpdateGameBoardRendering();
+            }
         }
     }
 }

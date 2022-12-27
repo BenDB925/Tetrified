@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Tetrified.Scripts.TetrominoLoading;
+using Tetrified.Scripts.Utility;
 using UnityEngine;
 
 namespace Tetrified.Scripts.Gameplay
@@ -11,6 +12,9 @@ namespace Tetrified.Scripts.Gameplay
 
         [SerializeField]
         private TetrisGridData _gridData;
+
+        [SerializeField]
+        private ScaleToFillTransform _boardBackground;
 
         [SerializeField]
         private TetrisBoardLogicManager _logicManager;
@@ -31,8 +35,9 @@ namespace Tetrified.Scripts.Gameplay
             _blockDimensions = _gameboardDimensions / new Vector2Int(_gridData._width, _gridData._height);
             _fallingPiece = _logicManager.FallingPiece;
             _fallingTetrominoBlocks = new List<GameObject>();
-            _landedTetrominoBlocks = new GameObject[_gridData._width, _gridData._height];
+            _landedTetrominoBlocks = new GameObject[_gridData._width, _gridData.GridHeightWithBufferRows];
             GetComponent<RectTransform>().sizeDelta = _gameboardDimensions;
+            _boardBackground.RescaleToFillTransform();
         }
 
         void Update()
@@ -56,7 +61,7 @@ namespace Tetrified.Scripts.Gameplay
 
             if (_fallingPiece != null)
             {
-                int[,] fallingPieceShape = _fallingPiece.GetShape();
+                int[,] fallingPieceShape = _fallingPiece.GetCurrentShape();
 
                 for (int i = 0; i < fallingPieceShape.GetLength(0); i++)
                 {
@@ -81,12 +86,18 @@ namespace Tetrified.Scripts.Gameplay
                 {
                     TetrominoData dataForCurrentTile = _gridData.GetGrid()[i, j];
 
+                    //if there should be a block here, and there isn't, add it
                     if (dataForCurrentTile._shape != null)
                     {
                         if (_landedTetrominoBlocks[i, j] == null)
                         {
                             PlaceBlockAtCoordinate(new Vector2Int(i, j), dataForCurrentTile._color, false);
                         }
+                    }
+                    else if (_landedTetrominoBlocks[i, j] != null)
+                    {
+                        TetrominoBlockFactory.Instance.ReturnBlockToPool(_landedTetrominoBlocks[i, j]);
+                        _landedTetrominoBlocks[i, j] = null;
                     }
 
                 }
