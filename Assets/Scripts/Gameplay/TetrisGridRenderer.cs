@@ -17,6 +17,12 @@ namespace Tetrified.Scripts.Gameplay
         private ScaleToFillTransform _boardBackground;
 
         [SerializeField]
+        private ScaleToFillTransform _boardSelector;
+
+        [SerializeField]
+        private ScaleToFillTransform _boardBorder;
+
+        [SerializeField]
         private TetrisBoardLogicManager _logicManager;
 
         private GameObject[,] _landedTetrominoBlocks;
@@ -36,8 +42,20 @@ namespace Tetrified.Scripts.Gameplay
             _fallingPiece = _logicManager.FallingPiece;
             _fallingTetrominoBlocks = new List<GameObject>();
             _landedTetrominoBlocks = new GameObject[_gridData._width, _gridData.GridHeightWithBufferRows];
+
             GetComponent<RectTransform>().sizeDelta = _gameboardDimensions;
+
+            Vector2 parentSizeWithSelectionBuffer = _gameboardDimensions;
+            parentSizeWithSelectionBuffer *= 1.25f;
+            transform.parent.GetComponent<RectTransform>().sizeDelta = parentSizeWithSelectionBuffer;
+
+            Vector2 boardPos = transform.localPosition;
+            boardPos.y = ((parentSizeWithSelectionBuffer.y - _gameboardDimensions.y) * 0.5f) - (parentSizeWithSelectionBuffer.y * 0.5f);
+            transform.localPosition = new Vector3(0, boardPos.y, 0);
+
             _boardBackground.RescaleToFillTransform();
+            _boardSelector.RescaleToFillTransform();
+            _boardBorder.RescaleToFillTransform();
         }
 
         void Update()

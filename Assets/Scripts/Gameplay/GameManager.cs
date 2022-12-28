@@ -56,7 +56,7 @@ namespace Tetrified.Scripts.Gameplay
             GameObject tetrisBoard = Instantiate(_tetrisBoardPrefab, Vector3.zero, Quaternion.identity);
             tetrisBoard.transform.SetParent(_tetrisBoardsParentTransform);
             tetrisBoard.transform.localScale = Vector3.one;
-            _tetrisBoards.Add(tetrisBoard.GetComponent<TetrisBoardLogicManager>());
+            _tetrisBoards.Add(tetrisBoard.GetComponentInChildren<TetrisBoardLogicManager>());
         }
     }
 }

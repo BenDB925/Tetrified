@@ -59,11 +59,15 @@ namespace Tetrified.Scripts.Gameplay
             // Calculate the new rotation
             int newRotation = (_rotation + 1) % 4;
 
-            Vector2Int movementNeeded = MovementNeededForRotation(newRotation);
-            _posInGrid += movementNeeded;
+            Vector2Int movementNeeded;
+            bool canRotate = MovementNeededForRotation(newRotation, out movementNeeded);
+            if (canRotate)
+            {
+                _posInGrid += movementNeeded;
 
-            // Set the new rotation
-            _rotation = newRotation;
+                // Set the new rotation
+                _rotation = newRotation;
+            }
         }
 
         // Moves the Tetris piece to the left
@@ -174,10 +178,10 @@ namespace Tetrified.Scripts.Gameplay
         /// </summary>
         /// <param name="newRotation"></param>
         /// <param name="adjustedPos">if near the edge, the push back needed to be able to rotate</param>
-        /// <returns></returns>
-        private Vector2Int MovementNeededForRotation(int newRotation)
+        /// <returns>if, after rotating and pushing away from the edge, if it's a valid movement (not colliding w/ anything)</returns>
+        private bool MovementNeededForRotation(int newRotation, out Vector2Int adjustedPos)
         {
-            Vector2Int adjustedPos = new Vector2Int();
+            adjustedPos = new Vector2Int();
             // Rotate the Tetris piece to the new rotation
             int[,] rotatedShape = RotateShape(_originalShapeLayout, newRotation);
 
@@ -217,7 +221,7 @@ namespace Tetrified.Scripts.Gameplay
                 }
             }
 
-            return adjustedPos;
+            return IsValidMovement(_posInGrid.x + adjustedPos.x, _posInGrid.y + adjustedPos.y, rotatedShape);
         }
 
         // Gets the Tetris piece position
