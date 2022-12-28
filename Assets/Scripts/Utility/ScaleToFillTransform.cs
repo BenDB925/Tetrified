@@ -9,7 +9,7 @@ namespace Tetrified.Scripts.Utility
 
         public void RescaleToFillTransform()
         {
-            var sr = GetComponent<SpriteRenderer>();
+            SpriteRenderer sr = GetComponent<SpriteRenderer>();
             if (sr == null) return;
 
             transform.localScale = new Vector3(1, 1, 1);
@@ -19,8 +19,6 @@ namespace Tetrified.Scripts.Utility
 
             float parentWidth = _transformToFill.sizeDelta.x;
             float parentHeight = _transformToFill.sizeDelta.y;
-
-            Debug.Log("width: " + width + ", height: " + height + ", parent width: " + parentWidth + ", parentHeight: " + parentHeight);
 
             Vector2 newScale = new Vector2();
             newScale.x = parentWidth / width;

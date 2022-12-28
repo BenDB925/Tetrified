@@ -59,12 +59,11 @@ namespace Tetrified.Scripts.Gameplay
             // Calculate the new rotation
             int newRotation = (_rotation + 1) % 4;
 
-            // Check if the new rotation is valid
-            if (IsValidRotation(newRotation))
-            {
-                // Set the new rotation
-                _rotation = newRotation;
-            }
+            Vector2Int movementNeeded = MovementNeededForRotation(newRotation);
+            _posInGrid += movementNeeded;
+
+            // Set the new rotation
+            _rotation = newRotation;
         }
 
         // Moves the Tetris piece to the left
@@ -169,9 +168,16 @@ namespace Tetrified.Scripts.Gameplay
             return newArray;
         }
 
-        // Checks if the Tetris piece can be rotated to the specified rotation
-        private bool IsValidRotation(int newRotation)
+
+        /// <summary>
+        /// Checks if the Tetris piece can be rotated to the specified rotation.
+        /// </summary>
+        /// <param name="newRotation"></param>
+        /// <param name="adjustedPos">if near the edge, the push back needed to be able to rotate</param>
+        /// <returns></returns>
+        private Vector2Int MovementNeededForRotation(int newRotation)
         {
+            Vector2Int adjustedPos = new Vector2Int();
             // Rotate the Tetris piece to the new rotation
             int[,] rotatedShape = RotateShape(_originalShapeLayout, newRotation);
 
@@ -184,28 +190,34 @@ namespace Tetrified.Scripts.Gameplay
 
                     if (isPartOfTheShape)
                     {
-                        bool isOutOfXBounds = _posInGrid.x + x < 0 || _posInGrid.x + x >= _gridData._width;
-                        if (isOutOfXBounds)
+                        bool isMinusX = _posInGrid.x + x < 0;
+                        if (isMinusX)
                         {
-                            return false;
+                            adjustedPos.x = Mathf.Max(-(_posInGrid.x + x), adjustedPos.x);
                         }
 
-                        bool isOutOfYBounds = _posInGrid.y + y < 0 || _posInGrid.y + y >= _gridData.GridHeightWithBufferRows;
-                        if (isOutOfYBounds)
+                        bool isMaxX = _posInGrid.x + x >= _gridData._width;
+                        if (isMaxX)
                         {
-                            return false;
+                            adjustedPos.x = Mathf.Min((_gridData._width - 1) - (_posInGrid.x + x), adjustedPos.x);
                         }
 
-                        bool isTileAlreadyOccupied = _gridData.GetGrid()[_posInGrid.x + x, _posInGrid.y + y]._shape != null;
-                        if (isTileAlreadyOccupied)
+                        bool isMinusY = _posInGrid.x + x < 0;
+                        if (isMinusY)
                         {
-                            return false;
+                            adjustedPos.y = Mathf.Max(-(_posInGrid.y + y), adjustedPos.y);
+                        }
+
+                        bool isMaxY = _posInGrid.y + y >= _gridData.GridHeightWithBufferRows;
+                        if (isMaxY)
+                        {
+                            adjustedPos.y = Mathf.Min((_gridData.GridHeightWithBufferRows - 1) - (_posInGrid.y + y), adjustedPos.y);
                         }
                     }
                 }
             }
 
-            return true;
+            return adjustedPos;
         }
 
         // Gets the Tetris piece position
