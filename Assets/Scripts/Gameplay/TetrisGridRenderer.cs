@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using Tetrified.Scripts.TetrominoLoading;
 using Tetrified.Scripts.Utility;
@@ -19,6 +20,8 @@ namespace Tetrified.Scripts.Gameplay
         [SerializeField]
         private ScaleToFillTransform _boardSelector;
 
+        private SpriteRenderer _selectorSprite;
+
         [SerializeField]
         private ScaleToFillTransform _boardBorder;
 
@@ -29,26 +32,56 @@ namespace Tetrified.Scripts.Gameplay
 
         private List<GameObject> _fallingTetrominoBlocks;
 
-        [SerializeField]
         private Vector2 _gameboardDimensions;
-
         private Vector2 _blockDimensions;
 
         private Tetromino _fallingPiece;
 
+        private bool _selected;
+
+        [SerializeField]
+        private float _selectionFadeTime = 0.5f;
+
+        private float _timeSinceSelected;
+        private float _alphaAtStart;
+
+        bool _initialised = false;
+
         private void Start()
         {
-            _blockDimensions = _gameboardDimensions / new Vector2Int(_gridData._width, _gridData._height);
+            StartCoroutine(Init());
+        }
+
+        private IEnumerator Init()
+        {
+            //needed for horizontal layoutgroup to update this board's size.
+            yield return new WaitForEndOfFrame();
+            _initialised = true;
+
             _fallingPiece = _logicManager.FallingPiece;
             _fallingTetrominoBlocks = new List<GameObject>();
             _landedTetrominoBlocks = new GameObject[_gridData._width, _gridData.GridHeightWithBufferRows];
+            _selectorSprite = _boardSelector.GetComponent<SpriteRenderer>();
+
+            _boardBackground.RescaleToFillTransform();
+            _boardSelector.RescaleToFillTransform();
+            _boardBorder.RescaleToFillTransform();
+
+        }
+
+        public void UpdateSize()
+        {
+            float width = Mathf.Min(transform.parent.GetComponent<RectTransform>().rect.width, 500);
+            float height = (width / _gridData._width) * _gridData._height;
+
+            _gameboardDimensions = new Vector2(width, height);
+            _blockDimensions = _gameboardDimensions / new Vector2Int(_gridData._width, _gridData._height);
 
             GetComponent<RectTransform>().sizeDelta = _gameboardDimensions;
 
             Vector2 parentSizeWithSelectionBuffer = _gameboardDimensions;
             parentSizeWithSelectionBuffer *= 1.25f;
             transform.parent.GetComponent<RectTransform>().sizeDelta = parentSizeWithSelectionBuffer;
-
             Vector2 boardPos = transform.localPosition;
             boardPos.y = ((parentSizeWithSelectionBuffer.y - _gameboardDimensions.y) * 0.5f) - (parentSizeWithSelectionBuffer.y * 0.5f);
             transform.localPosition = new Vector3(0, boardPos.y, 0);
@@ -56,10 +89,16 @@ namespace Tetrified.Scripts.Gameplay
             _boardBackground.RescaleToFillTransform();
             _boardSelector.RescaleToFillTransform();
             _boardBorder.RescaleToFillTransform();
+
+            UpdateBlockPositioning();
         }
 
         void Update()
         {
+            if (_initialised == false)
+            {
+                return;
+            }
             UpdateGameBoardRendering();
         }
 
@@ -67,6 +106,7 @@ namespace Tetrified.Scripts.Gameplay
         {
             UpdateFallingPiece();
             UpdateLandedPieces();
+            UpdateSelected();
         }
 
         private void UpdateFallingPiece()
@@ -137,6 +177,68 @@ namespace Tetrified.Scripts.Gameplay
             else
             {
                 _landedTetrominoBlocks[coord.x, coord.y] = newBlock;
+            }
+        }
+
+        public void SetBoardSelected(bool selected)
+        {
+            if (_selectorSprite == null)
+            {
+                _selectorSprite = _boardSelector.GetComponent<SpriteRenderer>();
+            }
+
+            _selected = selected;
+            _alphaAtStart = _selectorSprite.color.a;
+            _timeSinceSelected = 0;
+        }
+
+        //updates alpha value for selector sprite based on whether this board is currently selected
+        private void UpdateSelected()
+        {
+            _timeSinceSelected += Time.deltaTime;
+
+            float goalAlpha;
+            if (_selected)
+            {
+                goalAlpha = 1;
+            }
+            else
+            {
+                goalAlpha = 0;
+            }
+
+            float currAlpha = Mathf.Lerp(_alphaAtStart, goalAlpha, Mathf.Min(_timeSinceSelected / _selectionFadeTime, 1));
+
+            Color currColor = _selectorSprite.color;
+            currColor.a = currAlpha;
+            _selectorSprite.color = currColor;
+        }
+
+        private void UpdateBlockPositioning()
+        {
+            if (_landedTetrominoBlocks == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < _landedTetrominoBlocks.GetLength(0); i++)
+            {
+                for (int j = 0; j < _landedTetrominoBlocks.GetLength(1); j++)
+                {
+                    var block = _landedTetrominoBlocks[i, j];
+
+                    if (block == null)
+                    {
+                        continue;
+                    }
+                    Vector3 relativePos = new Vector3(i * _blockDimensions.x - (_gameboardDimensions.x * 0.5f),
+                                                      j * _blockDimensions.y,
+                                                         0);
+
+                    block.transform.localPosition = relativePos;
+                    block.GetComponent<RectTransform>().sizeDelta = _blockDimensions;
+                    block.transform.GetChild(0).GetComponent<RectTransform>().sizeDelta = _blockDimensions;
+                }
             }
         }
     }

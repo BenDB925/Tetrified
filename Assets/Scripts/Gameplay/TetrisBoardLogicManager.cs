@@ -1,5 +1,3 @@
-using Tetrified.Scripts.Gameplay;
-using Tetrified.Scripts.Utility;
 using Tetromino.Scripts.Gameplay;
 using UnityEngine;
 
@@ -16,9 +14,8 @@ namespace Tetrified.Scripts.Gameplay
         private Tetromino _fallingPiece;
 
         // the higher the value, the faster the tetronimo falls
-        [SerializeField]
         [Range(0, 10)]
-        private float _tetrominoFallSpeed;
+        public float _tetrominoFallSpeed;
 
         private float _timeSinceFall;
 
@@ -39,8 +36,14 @@ namespace Tetrified.Scripts.Gameplay
 
         private void Start()
         {
-            Tetromino.CantPlaceTetromino += OnGameOver;
-            Tetromino.TetronimoLanded += OnTetronimoLanded;
+            FallingPiece.CantPlaceTetromino += OnGameOver;
+            FallingPiece.TetronimoLanded += OnTetronimoLanded;
+        }
+
+        private void OnDestroy()
+        {
+            FallingPiece.CantPlaceTetromino -= OnGameOver;
+            FallingPiece.TetronimoLanded -= OnTetronimoLanded;
         }
 
         private void Update()
@@ -92,6 +95,16 @@ namespace Tetrified.Scripts.Gameplay
             {
                 _gridRenderer.UpdateGameBoardRendering();
             }
+        }
+
+        public void SetBoardSelected(bool selected)
+        {
+            _gridRenderer.SetBoardSelected(selected);
+        }
+
+        public void UpdateSize()
+        {
+            _gridRenderer.UpdateSize();
         }
     }
 }

@@ -17,8 +17,8 @@ namespace Tetrified.Scripts.Gameplay
         private Color _color;
 
         public delegate void PlacementEvent();
-        public static event PlacementEvent CantPlaceTetromino;
-        public static event PlacementEvent TetronimoLanded;
+        public event PlacementEvent CantPlaceTetromino;
+        public event PlacementEvent TetronimoLanded;
 
         private TetrisGridData _gridData;
 

@@ -38,44 +38,8 @@ namespace Tetromino.Scripts.Gameplay
             {
                 if (Input.GetKeyDown(_controls[action]))
                 {
-                    HandleAction(action);
+                    GameManager.Instance.HandleInputActions(action);
                 }
-            }
-        }
-
-        // Method to handle the input for a specific action
-        void HandleAction(Action action)
-        {
-            // Add code here to handle the input for each specific action
-            switch (action)
-            {
-                case Action.MoveTetronimoLeft:
-                    // Move the Tetris piece to the left
-                    GameManager.Instance.HandleInputActions(Action.MoveTetronimoLeft);
-                    break;
-                case Action.MoveTetronimoRight:
-                    // Move the Tetris piece to the right
-                    GameManager.Instance.HandleInputActions(Action.MoveTetronimoRight);
-                    break;
-                case Action.SelectTetrisBoardLeft:
-                    //Select the Tetris board to the left of the current
-                    break;
-                case Action.SelectTetrisBoardRight:
-                    //Select the Tetris board to the right of the current
-                    break;
-                case Action.RotateClockwise:
-                    // Rotate the Tetris piece clockwise
-                    GameManager.Instance.HandleInputActions(Action.RotateClockwise);
-                    break;
-                case Action.RotateCounterclockwise:
-                    // Rotate the Tetris piece counterclockwise
-                    break;
-                case Action.Drop:
-                    // Drop the Tetris piece
-                    break;
-                case Action.Pause:
-                    // Pause the game
-                    break;
             }
         }
     }

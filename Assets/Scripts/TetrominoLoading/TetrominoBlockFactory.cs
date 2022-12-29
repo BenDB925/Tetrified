@@ -82,6 +82,7 @@ public class TetrominoBlockFactory : Singleton<TetrominoBlockFactory>
         block.transform.localScale = Vector3.one;
         block.transform.GetChild(0).GetComponent<Image>().color = color;
         block.GetComponent<RectTransform>().sizeDelta = size;
+        block.transform.GetChild(0).GetComponent<RectTransform>().sizeDelta = size;
     }
 
     // Returns the specified Tetronimo block to the pool
