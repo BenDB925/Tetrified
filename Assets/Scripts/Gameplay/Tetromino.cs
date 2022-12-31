@@ -90,8 +90,6 @@ namespace Tetrified.Scripts.Gameplay
 
                 UpdatePiecePositionsInDictionary();
                 TetronimoMoved?.Invoke();
-
-                Debug.Log("r: " + _rotation);
             }
         }
 

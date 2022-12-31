@@ -35,26 +35,38 @@ namespace Tetrified.Scripts.Gameplay
         [SerializeField]
         private RectTransform _canvasRect;
 
+        private bool _isGameOver;
+
         private void Start()
         {
+            _isGameOver = false;
             _tetrisBoards = new List<TetrisBoardLogicManager>();
             CreateTetrisBoard();
             _currTimeToSpawnBoard = _baseTimeToSpawnExtraBoard;
             SelectTetrisBoard();
 
             TetrisBoardLogicManager.GameOverEvent += OnGameOver;
+            PointsManager.Instance.SetEarningPoints(true);
         }
 
         private void OnGameOver()
         {
-            foreach (var tetrisBoard in _tetrisBoards)
+            _isGameOver = true;
+            foreach (TetrisBoardLogicManager tetrisBoard in _tetrisBoards)
             {
                 tetrisBoard.SetPaused(true);
             }
+
+            PointsManager.Instance.SetEarningPoints(false);
         }
 
         public void HandleInputActions(InputManager.Action action)
         {
+            if (_isGameOver)
+            {
+                return;
+            }
+
             switch (action)
             {
                 case InputManager.Action.MoveTetronimoLeft:
@@ -108,6 +120,10 @@ namespace Tetrified.Scripts.Gameplay
             StartCoroutine(UpdateSizes());
         }
 
+        /// <summary>
+        /// updates the scale of the tetris boards based on canvas size and tetris board count
+        /// </summary>
+        /// <returns></returns>
         private IEnumerator UpdateSizes()
         {
             yield return new WaitForEndOfFrame();
@@ -117,15 +133,21 @@ namespace Tetrified.Scripts.Gameplay
                 board.UpdateSize();
             }
 
-            float playArea = _canvasRect.sizeDelta.x * 0.6f;
+            float playAreaX = _canvasRect.sizeDelta.x * 0.6f;
+            float playAreaY = _canvasRect.sizeDelta.y * 0.6f;
             float totalBoardWidth = 0;
+            float boardHeight = _tetrisBoards[0].GetComponent<RectTransform>().sizeDelta.y;
 
             foreach (TetrisBoardLogicManager board in _tetrisBoards)
             {
                 totalBoardWidth += board.GetComponent<RectTransform>().rect.width;
             }
 
-            float newScale = Mathf.Min(playArea / totalBoardWidth, 1);
+            float xScale = Mathf.Min(playAreaX / totalBoardWidth, 0.8f);
+            float yScale = Mathf.Min(playAreaY / boardHeight, 0.8f);
+
+            float newScale = Mathf.Min(xScale, yScale);
+
             foreach (TetrisBoardLogicManager board in _tetrisBoards)
             {
                 board.transform.parent.localScale = new Vector3(newScale, newScale, 1);
@@ -144,13 +166,18 @@ namespace Tetrified.Scripts.Gameplay
 
         private void Update()
         {
+            if (_isGameOver)
+            {
+                return;
+            }
+
             _timeSinceBoardSpawned += Time.deltaTime;
 
             if (_timeSinceBoardSpawned > _currTimeToSpawnBoard)
             {
                 _currTimeToSpawnBoard *= _boardSpawnTimeScalar;
                 _timeSinceBoardSpawned = 0;
-                //CreateTetrisBoard();
+                CreateTetrisBoard();
             }
 
             _currSpeed += _speedAccel * Time.deltaTime;
