@@ -29,10 +29,10 @@ namespace Tetrified.Scripts.Gameplay
 
         private Color _color;
 
-        public delegate void PlacementEvent();
-        public event PlacementEvent CantPlaceTetromino;
-        public event PlacementEvent TetronimoLanded;
-        public event PlacementEvent TetronimoMoved;
+        public delegate void TetronimoEvent();
+        public event TetronimoEvent CantPlaceTetromino;
+        public event TetronimoEvent TetronimoLanded;
+        public event TetronimoEvent TetronimoMoved;
 
         private TetrisGridData _gridData;
 
@@ -90,6 +90,8 @@ namespace Tetrified.Scripts.Gameplay
 
                 UpdatePiecePositionsInDictionary();
                 TetronimoMoved?.Invoke();
+
+                Debug.Log("r: " + _rotation);
             }
         }
 
@@ -304,16 +306,16 @@ namespace Tetrified.Scripts.Gameplay
             switch (_rotation)
             {
                 case 1:
-                    currentBlockX = coordInOriginalShape.y;
-                    currentBlockY = _originalShapeLayout.GetLength(0) - 1 - coordInOriginalShape.x;
+                    currentBlockX = _originalShapeLayout.GetLength(1) - 1 - coordInOriginalShape.y;
+                    currentBlockY = coordInOriginalShape.x;
                     break;
                 case 2:
                     currentBlockX = _originalShapeLayout.GetLength(0) - 1 - coordInOriginalShape.x;
                     currentBlockY = _originalShapeLayout.GetLength(1) - 1 - coordInOriginalShape.y;
                     break;
                 case 3:
-                    currentBlockX = _originalShapeLayout.GetLength(1) - 1 - coordInOriginalShape.y;
-                    currentBlockY = coordInOriginalShape.x;
+                    currentBlockX = coordInOriginalShape.y;
+                    currentBlockY = _originalShapeLayout.GetLength(0) - 1 - coordInOriginalShape.x;
                     break;
             }
 

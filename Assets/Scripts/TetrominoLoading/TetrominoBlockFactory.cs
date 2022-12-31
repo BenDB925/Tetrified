@@ -76,8 +76,6 @@ public class TetrominoBlockFactory : Singleton<TetrominoBlockFactory>
             // Activate the block and return it
             block.SetActive(true);
 
-
-            Debug.Log("removing from pool: " + block.gameObject.name);
             return block;
         }
         else
@@ -88,8 +86,6 @@ public class TetrominoBlockFactory : Singleton<TetrominoBlockFactory>
             block.name = "Block " + _blockNamer;
             SetBlockProperties(block, position, size, color, parent, shouldLerp);
 
-
-            Debug.Log("removing from pool: " + block.gameObject.name);
             return block;
         }
     }
@@ -114,7 +110,5 @@ public class TetrominoBlockFactory : Singleton<TetrominoBlockFactory>
     {
         block.SetActive(false);
         BlockPool.Add(block);
-
-        Debug.Log("adding to pool: " + block.gameObject.name);
     }
 }

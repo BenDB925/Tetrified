@@ -41,6 +41,16 @@ namespace Tetrified.Scripts.Gameplay
             CreateTetrisBoard();
             _currTimeToSpawnBoard = _baseTimeToSpawnExtraBoard;
             SelectTetrisBoard();
+
+            TetrisBoardLogicManager.GameOverEvent += OnGameOver;
+        }
+
+        private void OnGameOver()
+        {
+            foreach (var tetrisBoard in _tetrisBoards)
+            {
+                tetrisBoard.SetPaused(true);
+            }
         }
 
         public void HandleInputActions(InputManager.Action action)
@@ -149,6 +159,11 @@ namespace Tetrified.Scripts.Gameplay
             {
                 board._tetrominoFallSpeed = _currSpeed;
             }
+        }
+
+        private void OnDestroy()
+        {
+            TetrisBoardLogicManager.GameOverEvent -= OnGameOver;
         }
     }
 }

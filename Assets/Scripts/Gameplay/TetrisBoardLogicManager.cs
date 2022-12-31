@@ -27,6 +27,9 @@ namespace Tetrified.Scripts.Gameplay
 
         private bool _paused;
 
+        public delegate void TetrisBoardEvent();
+        public static event TetrisBoardEvent GameOverEvent;
+
         public Tetromino FallingPiece
         {
             get
@@ -91,6 +94,7 @@ namespace Tetrified.Scripts.Gameplay
         private void OnGameOver()
         {
             _paused = true;
+            GameOverEvent?.Invoke();
         }
 
         private void OnTetronimoLanded()
@@ -112,6 +116,11 @@ namespace Tetrified.Scripts.Gameplay
         public void UpdateSize()
         {
             _gridRenderer.UpdateSize();
+        }
+
+        public void SetPaused(bool paused)
+        {
+            _paused = paused;
         }
     }
 }

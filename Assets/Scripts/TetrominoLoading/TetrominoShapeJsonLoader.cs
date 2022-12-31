@@ -76,7 +76,7 @@ namespace Tetrified.Scripts.TetrominoLoading
                 LoadShapesFromJSON(_jsonFilePath);
             }
 
-            int randomShapeIndex = UnityEngine.Random.Range(0, _allPotentialShapes.Length);
+            int randomShapeIndex = 0;//UnityEngine.Random.Range(0, _allPotentialShapes.Length);
             return _allPotentialShapes[randomShapeIndex];
         }
     }
