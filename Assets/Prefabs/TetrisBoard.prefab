@@ -115,6 +115,7 @@ GameObject:
   - component: {fileID: 8573741281195113226}
   - component: {fileID: 1639236668669624660}
   - component: {fileID: 8664595742201317670}
+  - component: {fileID: 1529832928394020787}
   m_Layer: 0
   m_Name: TetrisBoardLogic
   m_TagString: Untagged
@@ -189,7 +190,21 @@ MonoBehaviour:
   _boardSelector: {fileID: 8344067483898690261}
   _boardBorder: {fileID: 4504737818022106103}
   _logicManager: {fileID: 8573741281195113226}
+  _fallingPieceCoordLerper: {fileID: 1529832928394020787}
   _selectionFadeTime: 0.5
+--- !u!114 &1529832928394020787
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2678654615009122443}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2791b3082347bee48b6b63f31ffabbed, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _lerpTime: 0.5
 --- !u!1 &5072220779037142538
 GameObject:
   m_ObjectHideFlags: 0

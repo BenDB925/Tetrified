@@ -140,7 +140,7 @@ namespace Tetrified.Scripts.Gameplay
             {
                 _currTimeToSpawnBoard *= _boardSpawnTimeScalar;
                 _timeSinceBoardSpawned = 0;
-                CreateTetrisBoard();
+                //CreateTetrisBoard();
             }
 
             _currSpeed += _speedAccel * Time.deltaTime;

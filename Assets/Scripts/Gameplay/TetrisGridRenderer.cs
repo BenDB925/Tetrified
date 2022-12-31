@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Tetrified.Scripts.TetrominoLoading;
@@ -30,12 +31,14 @@ namespace Tetrified.Scripts.Gameplay
 
         private GameObject[,] _landedTetrominoBlocks;
 
-        private List<GameObject> _fallingTetrominoBlocks;
+        private Dictionary<Vector2Int, TransformLerper> _fallingTetronimoBlocks = new Dictionary<Vector2Int, TransformLerper>();
 
         private Vector2 _gameboardDimensions;
         private Vector2 _blockDimensions;
 
         private Tetromino _fallingPiece;
+
+        private float _timeForLerp = 1;
 
         private bool _selected;
 
@@ -59,7 +62,9 @@ namespace Tetrified.Scripts.Gameplay
             _initialised = true;
 
             _fallingPiece = _logicManager.FallingPiece;
-            _fallingTetrominoBlocks = new List<GameObject>();
+            _fallingPiece.TetronimoMoved += OnFallingTetronimoMoved;
+            _fallingPiece.TetronimoLanded += OnFallingPieceLanded;
+
             _landedTetrominoBlocks = new GameObject[_gridData._width, _gridData.GridHeightWithBufferRows];
             _selectorSprite = _boardSelector.GetComponent<SpriteRenderer>();
 
@@ -67,6 +72,30 @@ namespace Tetrified.Scripts.Gameplay
             _boardSelector.RescaleToFillTransform();
             _boardBorder.RescaleToFillTransform();
 
+        }
+
+        public void OnFallingTetronimoMoved()
+        {
+            if (_initialised == false)
+            {
+                return;
+            }
+            UpdateGameBoardRendering();
+        }
+
+        public void OnFallingPieceLanded()
+        {
+            if (_initialised == false)
+            {
+                return;
+            }
+            foreach (KeyValuePair<Vector2Int, TransformLerper> block in _fallingTetronimoBlocks)
+            {
+                TetrominoBlockFactory.Instance.ReturnBlockToPool(block.Value.gameObject);
+            }
+            _fallingTetronimoBlocks.Clear();
+
+            UpdateLandedPieces();
         }
 
         public void UpdateSize()
@@ -93,33 +122,22 @@ namespace Tetrified.Scripts.Gameplay
             UpdateBlockPositioning();
         }
 
-        void Update()
-        {
-            if (_initialised == false)
-            {
-                return;
-            }
-            UpdateGameBoardRendering();
-        }
-
         public void UpdateGameBoardRendering()
         {
             UpdateFallingPiece();
             UpdateLandedPieces();
+        }
+
+        private void Update()
+        {
             UpdateSelected();
         }
 
         private void UpdateFallingPiece()
         {
-            foreach (GameObject block in _fallingTetrominoBlocks)
-            {
-                TetrominoBlockFactory.Instance.ReturnBlockToPool(block);
-            }
-            _fallingTetrominoBlocks.Clear();
-
             if (_fallingPiece != null)
             {
-                int[,] fallingPieceShape = _fallingPiece.GetCurrentShape();
+                int[,] fallingPieceShape = _fallingPiece.GetOriginalShape();
 
                 for (int i = 0; i < fallingPieceShape.GetLength(0); i++)
                 {
@@ -127,9 +145,12 @@ namespace Tetrified.Scripts.Gameplay
                     {
                         if (fallingPieceShape[i, j] != 0)
                         {
-                            Vector2Int coordinate = new Vector2Int(i + _fallingPiece.GetPositionInGrid().x, j + _fallingPiece.GetPositionInGrid().y);
+                            Tuple<Vector2Int, Vector2Int> coordsForBlock = _fallingPiece.GetOldAndCurrentPositionsForBlock(new Vector2Int(i, j));
 
-                            PlaceBlockAtCoordinate(coordinate, _fallingPiece.GetColor(), true);
+                            Vector2Int oldCoord = coordsForBlock.Item1;
+                            Vector2Int currCoord = coordsForBlock.Item2;
+
+                            PlaceBlockAtCoordinate(oldCoord, currCoord, new Vector2Int(i, j), _fallingPiece.GetColor(), true);
                         }
                     }
                 }
@@ -149,7 +170,8 @@ namespace Tetrified.Scripts.Gameplay
                     {
                         if (_landedTetrominoBlocks[i, j] == null)
                         {
-                            PlaceBlockAtCoordinate(new Vector2Int(i, j), dataForCurrentTile._color, false);
+                            //no need for lerping now that the block has landed
+                            PlaceBlockAtCoordinate(new Vector2Int(i, j), new Vector2Int(i, j), new Vector2Int(i, j), dataForCurrentTile._color, false);
                         }
                     }
                     else if (_landedTetrominoBlocks[i, j] != null)
@@ -162,22 +184,36 @@ namespace Tetrified.Scripts.Gameplay
             }
         }
 
-        private void PlaceBlockAtCoordinate(Vector2Int coord, Color color, bool isFallingBlock)
+        private void PlaceBlockAtCoordinate(Vector2Int oldCoordInGrid, Vector2Int destinationCoordInGrid, Vector2Int coordInShape, Color color, bool isFallingBlock)
         {
-            Vector3 relativePos = new Vector3(coord.x * _blockDimensions.x - (_gameboardDimensions.x * 0.5f),
-                                              coord.y * _blockDimensions.y,
-                                                 0);
-
-            GameObject newBlock = TetrominoBlockFactory.Instance.GetOrInstantiateBlock(relativePos, _blockDimensions, color, transform);
+            Vector3 oldPos = GridCoordToWorldPos(new Vector2Int(oldCoordInGrid.x, oldCoordInGrid.y));
+            Vector3 destinationPos = GridCoordToWorldPos(new Vector2Int(destinationCoordInGrid.x, destinationCoordInGrid.y));
+            GameObject newBlock;
+            TransformLerper blockLerper;
 
             if (isFallingBlock)
             {
-                _fallingTetrominoBlocks.Add(newBlock);
+
+                if (_fallingTetronimoBlocks.ContainsKey(coordInShape) == false)
+                {
+                    _fallingTetronimoBlocks.Add(coordInShape, null);
+                }
+
+                blockLerper = _fallingTetronimoBlocks[coordInShape];
+                if (blockLerper == null)
+                {
+                    newBlock = TetrominoBlockFactory.Instance.GetOrInstantiateBlock(oldPos, _blockDimensions, color, transform, true);
+                    blockLerper = newBlock.GetComponent<TransformLerper>();
+                    _fallingTetronimoBlocks[coordInShape] = blockLerper;
+                }
+                blockLerper.SetDestination(destinationPos, _timeForLerp);
             }
             else
             {
-                _landedTetrominoBlocks[coord.x, coord.y] = newBlock;
+                newBlock = TetrominoBlockFactory.Instance.GetOrInstantiateBlock(destinationPos, _blockDimensions, color, transform, false);
+                _landedTetrominoBlocks[destinationCoordInGrid.x, destinationCoordInGrid.y] = newBlock;
             }
+
         }
 
         public void SetBoardSelected(bool selected)
@@ -214,6 +250,13 @@ namespace Tetrified.Scripts.Gameplay
             _selectorSprite.color = currColor;
         }
 
+        private Vector3 GridCoordToWorldPos(Vector2Int gridCoord)
+        {
+            return new Vector3(gridCoord.x * _blockDimensions.x - (_gameboardDimensions.x * 0.5f),
+                               gridCoord.y * _blockDimensions.y - (_gameboardDimensions.y * 0.5f),
+                                0);
+        }
+
         private void UpdateBlockPositioning()
         {
             if (_landedTetrominoBlocks == null)
@@ -231,15 +274,24 @@ namespace Tetrified.Scripts.Gameplay
                     {
                         continue;
                     }
-                    Vector3 relativePos = new Vector3(i * _blockDimensions.x - (_gameboardDimensions.x * 0.5f),
-                                                      j * _blockDimensions.y,
-                                                         0);
+
+                    Vector3 relativePos = GridCoordToWorldPos(new Vector2Int(i, j));
 
                     block.transform.localPosition = relativePos;
                     block.GetComponent<RectTransform>().sizeDelta = _blockDimensions;
                     block.transform.GetChild(0).GetComponent<RectTransform>().sizeDelta = _blockDimensions;
                 }
             }
+        }
+
+        private void OnDestroy()
+        {
+            _fallingPiece.TetronimoMoved -= OnFallingTetronimoMoved;
+        }
+
+        public void SetLerpSpeed(float lerpSpeed)
+        {
+            _timeForLerp = lerpSpeed;
         }
     }
 

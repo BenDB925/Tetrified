@@ -16,6 +16,8 @@ public class TetrominoBlockFactory : Singleton<TetrominoBlockFactory>
     const int InitialPoolSize = 100;
     private const string MaterialBlockColorVar = "_BlockColor";
 
+    private static int _blockNamer = 0;
+
     public List<GameObject> BlockPool
     {
         get
@@ -45,12 +47,22 @@ public class TetrominoBlockFactory : Singleton<TetrominoBlockFactory>
             GameObject block = Instantiate(_blockPrefab);
             block.transform.SetParent(transform);
             block.SetActive(false);
+            _blockNamer++;
+            block.name = "Block " + _blockNamer;
             BlockPool.Add(block);
         }
     }
 
-    // Gets from the pool, or instantiates a Tetronimo block at the specified position and color
-    public GameObject GetOrInstantiateBlock(Vector3 position, Vector2 size, Color color, Transform parent)
+    /// <summary>
+    /// Gets from the pool, or instantiates a Tetronimo block at the specified position and color
+    /// </summary>
+    /// <param name="position"></param>
+    /// <param name="size"></param>
+    /// <param name="color"></param>
+    /// <param name="parent"></param>
+    /// <param name="shouldLerp"></param>
+    /// <returns></returns>
+    public GameObject GetOrInstantiateBlock(Vector3 position, Vector2 size, Color color, Transform parent, bool shouldLerp)
     {
         // Check if there are any blocks available in the pool
         if (BlockPool.Count > 0)
@@ -59,22 +71,30 @@ public class TetrominoBlockFactory : Singleton<TetrominoBlockFactory>
             GameObject block = BlockPool[0];
             BlockPool.RemoveAt(0);
 
-            SetBlockProperties(block, position, size, color, parent);
+            SetBlockProperties(block, position, size, color, parent, shouldLerp);
 
             // Activate the block and return it
             block.SetActive(true);
+
+
+            Debug.Log("removing from pool: " + block.gameObject.name);
             return block;
         }
         else
         {
             // There are no blocks available in the pool, so instantiate a new block
             GameObject block = Instantiate(_blockPrefab);
-            SetBlockProperties(block, position, size, color, parent);
+            _blockNamer++;
+            block.name = "Block " + _blockNamer;
+            SetBlockProperties(block, position, size, color, parent, shouldLerp);
+
+
+            Debug.Log("removing from pool: " + block.gameObject.name);
             return block;
         }
     }
 
-    private void SetBlockProperties(GameObject block, Vector3 pos, Vector2 size, Color color, Transform parent)
+    private void SetBlockProperties(GameObject block, Vector3 pos, Vector2 size, Color color, Transform parent, bool shouldLerp)
     {
         // Set the block's position and color
         block.transform.SetParent(parent);
@@ -83,12 +103,18 @@ public class TetrominoBlockFactory : Singleton<TetrominoBlockFactory>
         block.transform.GetChild(0).GetComponent<Image>().color = color;
         block.GetComponent<RectTransform>().sizeDelta = size;
         block.transform.GetChild(0).GetComponent<RectTransform>().sizeDelta = size;
+        block.GetComponent<TransformLerper>().enabled = shouldLerp;
     }
 
-    // Returns the specified Tetronimo block to the pool
+    /// <summary>
+    /// Returns the specified Tetronimo block to the pool
+    /// </summary>
+    /// <param name="block"></param>
     public void ReturnBlockToPool(GameObject block)
     {
         block.SetActive(false);
         BlockPool.Add(block);
+
+        Debug.Log("adding to pool: " + block.gameObject.name);
     }
 }

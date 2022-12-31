@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using Tetrified.Scripts.TetrominoLoading;
 using UnityEngine;
 
@@ -5,13 +7,24 @@ namespace Tetrified.Scripts.Gameplay
 {
     public class Tetromino
     {
-        // The current Tetris piece shape, including rotation
+        /// <summary>
+        /// The layout of the tetronimo, 1's = part of the shape, 0's = blank
+        /// </summary>
         private int[,] _originalShapeLayout;
 
-        // The position of the Tetris piece on the grid
+        /// <summary>
+        /// maps the block in the original shape to the current grid position in the board, and it's previous position.
+        /// </summary>
+        private Dictionary<Vector2Int, Tuple<Vector2Int, Vector2Int>> _oldAndCurrentGridPositions = new Dictionary<Vector2Int, Tuple<Vector2Int, Vector2Int>>();
+
+        /// <summary>
+        /// The position of the Tetris piece on the grid
+        /// </summary>
         private Vector2Int _posInGrid;
 
-        // The rotation of the Tetris piece - numbered 0-4, 0 being initial, 1 being 90 degrees clockwise etc.
+        /// <summary>
+        /// The rotation of the Tetris piece - numbered 0-4, 0 being initial, 1 being 90 degrees clockwise etc.
+        /// </summary>
         private int _rotation;
 
         private Color _color;
@@ -19,6 +32,7 @@ namespace Tetrified.Scripts.Gameplay
         public delegate void PlacementEvent();
         public event PlacementEvent CantPlaceTetromino;
         public event PlacementEvent TetronimoLanded;
+        public event PlacementEvent TetronimoMoved;
 
         private TetrisGridData _gridData;
 
@@ -28,7 +42,9 @@ namespace Tetrified.Scripts.Gameplay
             NewPiece();
         }
 
-        // Initializes a new Tetris piece
+        ///\ <summary>
+        /// Initializes a new Tetris piece
+        /// </summary>
         public void NewPiece()
         {
             // Randomly select a Tetris piece shape
@@ -51,9 +67,13 @@ namespace Tetrified.Scripts.Gameplay
 
             _posInGrid = new Vector2Int(midPointX, topY);
             _rotation = 0;
+
+            _oldAndCurrentGridPositions.Clear();
         }
 
-        // Rotates the Tetris piece clockwise
+        /// <summary>
+        /// Rotates the Tetris piece clockwise
+        /// </summary>
         public void Rotate()
         {
             // Calculate the new rotation
@@ -67,10 +87,15 @@ namespace Tetrified.Scripts.Gameplay
 
                 // Set the new rotation
                 _rotation = newRotation;
+
+                UpdatePiecePositionsInDictionary();
+                TetronimoMoved?.Invoke();
             }
         }
 
-        // Moves the Tetris piece to the left
+        /// <summary>
+        /// Moves the Tetris piece to the left
+        /// </summary>
         public void MoveLeft()
         {
             // Check if the Tetris piece can be moved to the left
@@ -78,10 +103,14 @@ namespace Tetrified.Scripts.Gameplay
             {
                 // Move the Tetris piece to the left
                 _posInGrid.x--;
+                UpdatePiecePositionsInDictionary();
+                TetronimoMoved?.Invoke();
             }
         }
 
-        // Moves the Tetris piece to the right
+        /// <summary>
+        /// Moves the Tetris piece to the right
+        /// </summary>
         public void MoveRight()
         {
             // Check if the Tetris piece can be moved to the right
@@ -89,10 +118,14 @@ namespace Tetrified.Scripts.Gameplay
             {
                 // Move the Tetris piece to the right
                 _posInGrid.x++;
+                UpdatePiecePositionsInDictionary();
+                TetronimoMoved?.Invoke();
             }
         }
 
-        // Moves the Tetris piece down
+        /// <summary>
+        /// Moves the Tetris piece down
+        /// </summary>
         public void MoveDown()
         {
             // Check if the Tetris piece can be moved down
@@ -100,6 +133,8 @@ namespace Tetrified.Scripts.Gameplay
             {
                 // Move the Tetris piece down
                 _posInGrid.y--;
+                UpdatePiecePositionsInDictionary();
+                TetronimoMoved?.Invoke();
             }
             else
             {
@@ -109,7 +144,13 @@ namespace Tetrified.Scripts.Gameplay
             }
         }
 
-        // Checks if the Tetris piece can be moved to the specified position
+        /// <summary>
+        /// Checks if the Tetris piece can be moved to the specified position
+        /// </summary>
+        /// <param name="newX">in grid coordinates</param>
+        /// <param name="newY">in grid coordinates</param>
+        /// <param name="shape">the current, rotated shape to check against</param>
+        /// <returns></returns>
         private bool IsValidMovement(int newX, int newY, int[,] shape)
         {
             bool isAtTheBottom = newY < 0;
@@ -140,7 +181,12 @@ namespace Tetrified.Scripts.Gameplay
             return true;
         }
 
-        // Rotates the specified shape to the specified rotation
+        /// <summary>
+        /// Rotates the specified shape to the specified rotation
+        /// </summary>
+        /// <param name="shape"></param>
+        /// <param name="rotation">the rotation as a number between 0-3 in 90 degree increments</param>
+        /// <returns></returns>
         static int[,] RotateShape(int[,] shape, int rotation)
         {
             int[,] rotated = shape;
@@ -155,16 +201,16 @@ namespace Tetrified.Scripts.Gameplay
             return rotated;
         }
 
-        private static int[,] RotateClockwiseOnce(int[,] oldArray)
+        private static int[,] RotateClockwiseOnce(int[,] currentShape)
         {
-            int[,] newArray = new int[oldArray.GetLength(1), oldArray.GetLength(0)];
+            int[,] newArray = new int[currentShape.GetLength(1), currentShape.GetLength(0)];
             int newY, newX = 0;
-            for (int oldY = oldArray.GetLength(1) - 1; oldY >= 0; oldY--)
+            for (int oldY = currentShape.GetLength(1) - 1; oldY >= 0; oldY--)
             {
                 newY = 0;
-                for (int oldX = 0; oldX < oldArray.GetLength(0); oldX++)
+                for (int oldX = 0; oldX < currentShape.GetLength(0); oldX++)
                 {
-                    newArray[newX, newY] = oldArray[oldX, oldY];
+                    newArray[newX, newY] = currentShape[oldX, oldY];
                     newY++;
                 }
                 newX++;
@@ -224,7 +270,76 @@ namespace Tetrified.Scripts.Gameplay
             return IsValidMovement(_posInGrid.x + adjustedPos.x, _posInGrid.y + adjustedPos.y, rotatedShape);
         }
 
-        // Gets the Tetris piece position
+        /// <summary>
+        /// Updates _oldAndCurrentGridPositions to contain the updated, rotated grid coords of each block in the tetronimo
+        /// </summary>
+        private void UpdatePiecePositionsInDictionary()
+        {
+            for (int i = 0; i < _originalShapeLayout.GetLength(0); i++)
+            {
+                for (int j = 0; j < _originalShapeLayout.GetLength(1); j++)
+                {
+                    Vector2Int coordInShape = new Vector2Int(i, j);
+
+                    Vector2Int currCoord = FindCoordInGridForBlock(coordInShape);
+                    Vector2Int oldCoord = currCoord;
+
+                    if (_oldAndCurrentGridPositions.ContainsKey(coordInShape))
+                    {
+                        oldCoord = _oldAndCurrentGridPositions[coordInShape].Item2;
+                    }
+
+                    Tuple<Vector2Int, Vector2Int> oldAndCurrentPositionsForCoord = new Tuple<Vector2Int, Vector2Int>(oldCoord, currCoord);
+                    _oldAndCurrentGridPositions[coordInShape] = oldAndCurrentPositionsForCoord;
+                }
+            }
+        }
+
+        private Vector2Int FindCoordInGridForBlock(Vector2Int coordInOriginalShape)
+        {
+            // Calculate the current grid position of the block based on its position in the original, unrotated tetromino
+            // and the current rotation of the tetromino
+            int currentBlockX = coordInOriginalShape.x;
+            int currentBlockY = coordInOriginalShape.y;
+            switch (_rotation)
+            {
+                case 1:
+                    currentBlockX = coordInOriginalShape.y;
+                    currentBlockY = _originalShapeLayout.GetLength(0) - 1 - coordInOriginalShape.x;
+                    break;
+                case 2:
+                    currentBlockX = _originalShapeLayout.GetLength(0) - 1 - coordInOriginalShape.x;
+                    currentBlockY = _originalShapeLayout.GetLength(1) - 1 - coordInOriginalShape.y;
+                    break;
+                case 3:
+                    currentBlockX = _originalShapeLayout.GetLength(1) - 1 - coordInOriginalShape.y;
+                    currentBlockY = coordInOriginalShape.x;
+                    break;
+            }
+
+            return new Vector2Int(_posInGrid.x + currentBlockX, _posInGrid.y + currentBlockY);
+        }
+
+        public Tuple<Vector2Int, Vector2Int> GetOldAndCurrentPositionsForBlock(Vector2Int coordInOriginalShape)
+        {
+
+            if (_oldAndCurrentGridPositions.ContainsKey(coordInOriginalShape) == false)
+            {
+                Vector2Int currCoordInGrid = FindCoordInGridForBlock(coordInOriginalShape);
+
+                Tuple<Vector2Int, Vector2Int> coords
+                                = new Tuple<Vector2Int, Vector2Int>(currCoordInGrid, currCoordInGrid);
+
+                _oldAndCurrentGridPositions[coordInOriginalShape] = coords;
+            }
+
+            return _oldAndCurrentGridPositions[coordInOriginalShape];
+        }
+
+        /// <summary>
+        /// Gets the Tetronimo position in grid coords
+        /// </summary>
+        /// <returns></returns>
         public Vector2Int GetPositionInGrid()
         {
             return _posInGrid;
@@ -238,6 +353,16 @@ namespace Tetrified.Scripts.Gameplay
         public Color GetColor()
         {
             return _color;
+        }
+
+        public int GetRotation()
+        {
+            return _rotation;
+        }
+
+        public int[,] GetOriginalShape()
+        {
+            return _originalShapeLayout;
         }
     }
 

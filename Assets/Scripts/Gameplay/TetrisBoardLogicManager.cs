@@ -17,6 +17,12 @@ namespace Tetrified.Scripts.Gameplay
         [Range(0, 10)]
         public float _tetrominoFallSpeed;
 
+        /// <summary>
+        /// the percentage of the time between grid drops that the lerp takes - 0 = no lerp, 1 = always lerping
+        /// </summary>
+        [Range(0, 1)]
+        private float _lerpSpeed = 0.5f;
+
         private float _timeSinceFall;
 
         private bool _paused;
@@ -55,6 +61,7 @@ namespace Tetrified.Scripts.Gameplay
 
             const float NormalFallSpeed = 1.0f;
             float adjustedSpeed = Mathf.Max(0, NormalFallSpeed - ((0.1f * _tetrominoFallSpeed) * NormalFallSpeed));
+            _gridRenderer.SetLerpSpeed(adjustedSpeed * _lerpSpeed);
 
             if (_timeSinceFall > adjustedSpeed)
             {
