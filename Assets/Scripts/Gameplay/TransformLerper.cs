@@ -11,6 +11,11 @@ public class TransformLerper : MonoBehaviour
 
     public void SetDestination(Vector3 pos, float timeForLerp)
     {
+        if(float.IsNaN(pos.sqrMagnitude))
+        {
+            return;
+        }
+
         // Store the starting position
         _startPosition = transform.localPosition;
 

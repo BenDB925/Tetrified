@@ -173,6 +173,11 @@ namespace Tetrified.Scripts.Gameplay
 
         private void Update()
         {
+            if(Input.GetKeyDown(KeyCode.Space))
+            {
+                OnGameOver();
+            }
+
             if (_isGameOver)
             {
                 return;

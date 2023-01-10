@@ -1,3 +1,5 @@
+using LootLocker.Requests;
+using Tetronimo.Scripts.Utility;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
@@ -11,9 +13,11 @@ namespace Tetrified.Scripts.Utility
 
         private const string PlayGameButtonName = "PlayButton";
         private const string ControlsButtonName = "ControlsButton";
+        private const string LeaderboardButtonName = "LeaderboardButton";
 
         private const string GameSceneName = "Game";
         private const string ControlsSceneName = "Controls";
+        private const string LeaderboardSceneName = "Leaderboard";
 
         private void Start()
         {
@@ -22,6 +26,9 @@ namespace Tetrified.Scripts.Utility
             playGameButton.clicked += OnPlayGamePressed;
             Button controlsButton = rootElement.Query<Button>(ControlsButtonName);
             controlsButton.clicked += OnViewControlsPressed;
+            Button leaderboardButton = rootElement.Query<Button>(LeaderboardButtonName);
+            leaderboardButton.clicked += OnLeaderboardPressed;
+            OnlineScoreManager.Instance.InitSession();
         }
 
         private void OnPlayGamePressed()
@@ -31,6 +38,10 @@ namespace Tetrified.Scripts.Utility
         private void OnViewControlsPressed()
         {
             SceneManager.LoadScene(ControlsSceneName);
+        }
+        private void OnLeaderboardPressed()
+        {
+            SceneManager.LoadScene(LeaderboardSceneName);
         }
     }
 }

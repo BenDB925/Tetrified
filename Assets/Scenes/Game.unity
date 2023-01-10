@@ -543,7 +543,7 @@ MonoBehaviour:
   _tetrisBoardPrefab: {fileID: 8433531168024199495, guid: 0357fe6cd5ae47e4f9e2730055688cbe, type: 3}
   _tetrisBoardsParentTransform: {fileID: 20988983}
   _baseTimeToSpawnExtraBoard: 2
-  _speedAccel: 0.05
+  _speedAccel: 0.02
   _canvasRect: {fileID: 907697775}
 --- !u!4 &780625977
 Transform:
