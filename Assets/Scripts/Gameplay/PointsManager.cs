@@ -31,5 +31,10 @@ namespace Tetrified.Scripts.Gameplay
         {
             _earningPoints = earningPoints;
         }
+
+        public int GetPointsCount()
+        {
+            return Mathf.FloorToInt(_points);
+        }
     }
 }

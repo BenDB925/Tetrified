@@ -73,3 +73,6 @@ Thumbs.db
 
 # Visual Studio Source Code Manager files
 *.csproj.vspscc
+
+# Show File History Plugin
+.history/*

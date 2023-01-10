@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
 using Tetrified.Scripts.TetrominoLoading;
 using Tetrified.Scripts.Utility;
 using UnityEngine;
@@ -281,6 +282,13 @@ namespace Tetrified.Scripts.Gameplay
                     block.GetComponent<RectTransform>().sizeDelta = _blockDimensions;
                     block.transform.GetChild(0).GetComponent<RectTransform>().sizeDelta = _blockDimensions;
                 }
+            }
+
+            foreach(var block in _fallingTetronimoBlocks)
+            {
+                GameObject blockObj = block.Value.gameObject;
+                blockObj.GetComponent<RectTransform>().sizeDelta = _blockDimensions;
+                blockObj.transform.GetChild(0).GetComponent<RectTransform>().sizeDelta = _blockDimensions;
             }
         }
 

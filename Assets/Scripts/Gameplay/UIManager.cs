@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Tetrified.Scripts.Utility;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -8,26 +9,28 @@ public class UIManager : Singleton<UIManager>
     private UIDocument _rootDocument;
 
     private TextElement _pointsText;
-    private const string PointsTextName = "PointsValue";
+    private const string PointsTextGameName = "PointsValue";
+    private const string PointsTextGameOverName = "PointsValueGameOver";
 
     private void Start()
     {
         VisualElement rootElement = _rootDocument.rootVisualElement;
-        _pointsText = rootElement.Query<TextElement>(PointsTextName);
+        _pointsText = rootElement.Query<TextElement>(PointsTextGameName);
     }
 
     public void SetScore(int score)
     {
-        string scoreString = score.ToString();
-        if (score < 100)
-        {
-            scoreString.Insert(0, "0");
-        }
-        if (score < 10)
-        {
-            scoreString.Insert(0, "0");
-        }
+        _pointsText.text = GetScoreString(score);
+    }
 
-        _pointsText.text = score.ToString();
+    /// <summary>
+    /// returns a formatted string with 
+    /// </summary>
+    /// <param name="score"></param>
+    /// <returns></returns>
+    public static string GetScoreString(int score)
+    {
+        string scoreString = score.ToString("000");
+        return scoreString;
     }
 }

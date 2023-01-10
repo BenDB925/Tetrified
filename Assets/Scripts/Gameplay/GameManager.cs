@@ -58,6 +58,7 @@ namespace Tetrified.Scripts.Gameplay
             }
 
             PointsManager.Instance.SetEarningPoints(false);
+            GameOverUIManager.Instance.EnableGameOverUI(PointsManager.Instance.GetPointsCount());
         }
 
         public void HandleInputActions(InputManager.Action action)
