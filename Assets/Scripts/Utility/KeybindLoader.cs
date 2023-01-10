@@ -25,9 +25,7 @@ namespace Tetrified.Scripts.Utility
             _controls[Action.SelectTetrisBoardLeft] = KeyCode.A;
             _controls[Action.SelectTetrisBoardRight] = KeyCode.D;
             _controls[Action.RotateClockwise] = KeyCode.UpArrow;
-            _controls[Action.RotateCounterclockwise] = KeyCode.DownArrow;
-            _controls[Action.Drop] = KeyCode.Space;
-            _controls[Action.Pause] = KeyCode.Escape;
+            _controls[Action.RotateCounterClockwise] = KeyCode.DownArrow;
 
             // Check if the JSON file exists
             if (File.Exists(_keybindsFilePath))

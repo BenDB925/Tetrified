@@ -1,4 +1,3 @@
-using Tetrified.Scripts.Gameplay;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
@@ -15,7 +14,7 @@ namespace Tetrified.Scripts.Utility
 
         private const string RetryButtonName = "RetryButton";
         private const string MainMenuButtonName = "MainMenuButton";
-        private const string PointsValueText = "PointsValue";
+        private const string PointsValueText = "PointsValueGameOver";
 
         private const string GameSceneName = "Game";
         private const string ControlsSceneName = "Controls";

@@ -1,10 +1,12 @@
-using Tetrified.Scripts.Gameplay;
 using UnityEngine;
 
 namespace Tetrified.Scripts.Utility
 {
     public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
     {
+        [SerializeField]
+        private bool _destroyOnLoad;
+
         private static T _instance;
 
         public static T Instance
@@ -31,7 +33,10 @@ namespace Tetrified.Scripts.Utility
             {
                 _instance = this as T;
                 gameObject.transform.SetParent(null);
-                DontDestroyOnLoad(gameObject);
+                if(_destroyOnLoad == false)
+                {
+                    DontDestroyOnLoad(gameObject);
+                }
             }
             else if (_instance != this)
             {

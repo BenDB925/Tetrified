@@ -1,4 +1,21 @@
 .unity-base-field__label {
     min-width: auto;
     padding-right: 22px;
+    -unity-font: url('project://database/Assets/Fonts/LT%20Funk.otf?fileID=12800000&guid=c9d0d7498e010ea43ada9c4619cc43b6&type=3#LT Funk');
+    -unity-font-definition: url('project://database/Assets/Fonts/FunkFontAsset.asset?fileID=11400000&guid=0ec3f19daef6c12479db64928cea66ed&type=2#FunkFontAsset');
+    font-size: 14px;
+    width: 64px;
+    height: 37px;
+    align-items: center;
+    justify-content: center;
+    -unity-text-align: middle-center;
+    color: rgb(210, 210, 210);
+}
+
+.unity-base-field__input {
+    min-height: 20px;
+    font-size: 14px;
+    background-color: rgb(108, 108, 108);
+    -unity-font: url('project://database/Assets/Fonts/LT%20Funk.otf?fileID=12800000&guid=c9d0d7498e010ea43ada9c4619cc43b6&type=3#LT Funk');
+    -unity-font-definition: url('project://database/Assets/Fonts/FunkFontAsset.asset?fileID=11400000&guid=0ec3f19daef6c12479db64928cea66ed&type=2#FunkFontAsset');
 }

@@ -72,12 +72,31 @@ namespace Tetrified.Scripts.Gameplay
         }
 
         /// <summary>
-        /// Rotates the Tetris piece clockwise
+        /// Rotates the Tetris piece
         /// </summary>
-        public void Rotate()
+        public void Rotate(bool clockwise)
         {
+            int rotationDiff;
+
+            if(clockwise)
+            {
+                rotationDiff = 1;
+            }
+            else
+            {
+                rotationDiff = -1;
+            }
+
+
             // Calculate the new rotation
-            int newRotation = (_rotation + 1) % 4;
+            int newRotation = _rotation + rotationDiff;
+
+            if(newRotation < 0)
+            {
+                newRotation += 4;
+            }
+
+            newRotation = newRotation % 4;
 
             Vector2Int movementNeeded;
             bool canRotate = MovementNeededForRotation(newRotation, out movementNeeded);

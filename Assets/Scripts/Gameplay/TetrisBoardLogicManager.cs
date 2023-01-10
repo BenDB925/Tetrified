@@ -84,7 +84,10 @@ namespace Tetrified.Scripts.Gameplay
                     _fallingPiece.MoveRight();
                     break;
                 case InputManager.Action.RotateClockwise:
-                    _fallingPiece.Rotate();
+                    _fallingPiece.Rotate(true);
+                    break;
+                case InputManager.Action.RotateCounterClockwise:
+                    _fallingPiece.Rotate(false);
                     break;
                 default:
                     break;

@@ -88,6 +88,12 @@ namespace Tetrified.Scripts.Gameplay
                         _tetrisBoards[_currentActiveBoard].TakeInput(InputManager.Action.RotateClockwise);
                     }
                     break;
+                case InputManager.Action.RotateCounterClockwise:
+                    if (_tetrisBoards?.Count > _currentActiveBoard)
+                    {
+                        _tetrisBoards[_currentActiveBoard].TakeInput(InputManager.Action.RotateCounterClockwise);
+                    }
+                    break;
 
                 case InputManager.Action.SelectTetrisBoardLeft:
                     _currentActiveBoard--;

@@ -15,9 +15,7 @@ namespace Tetromino.Scripts.Gameplay
             SelectTetrisBoardLeft,
             SelectTetrisBoardRight,
             RotateClockwise,
-            RotateCounterclockwise,
-            Drop,
-            Pause
+            RotateCounterClockwise
         }
 
         // Dictionary to map actions to specific controls
@@ -40,6 +38,50 @@ namespace Tetromino.Scripts.Gameplay
                 {
                     GameManager.Instance.HandleInputActions(action);
                 }
+            }
+
+            CheckForTouchInputs();
+            CheckForMouseInputs();
+        }
+
+        private void CheckForTouchInputs()
+        {
+            if (Input.touchCount > 0)
+            {
+                Vector2 touchPos = Input.GetTouch(0).position;
+                HandleInput(touchPos);
+            }
+        }
+
+        private void CheckForMouseInputs()
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                Vector2 touchPos = Input.mousePosition;
+                HandleInput(touchPos);
+            }
+        }
+
+        private void HandleInput(Vector2 inputPoint)
+        {
+            bool leftSide = (inputPoint.x / Screen.width) < 0.5f;
+            bool bottomSide = (inputPoint.y / Screen.height) < 0.5f;
+
+            if (leftSide && bottomSide && bottomSide)
+            {
+                GameManager.Instance.HandleInputActions(Action.RotateCounterClockwise);
+            }
+            else if (leftSide == false && bottomSide)
+            {
+                GameManager.Instance.HandleInputActions(Action.RotateClockwise);
+            }
+            else if (leftSide && bottomSide == false)
+            {
+                GameManager.Instance.HandleInputActions(Action.SelectTetrisBoardLeft);
+            }
+            else if (leftSide == false && bottomSide == false)
+            {
+                GameManager.Instance.HandleInputActions(Action.SelectTetrisBoardRight);
             }
         }
     }
