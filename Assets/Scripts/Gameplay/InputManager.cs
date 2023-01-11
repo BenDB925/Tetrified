@@ -71,8 +71,6 @@ namespace Tetromino.Scripts.Gameplay
             int xThird = Mathf.FloorToInt((int)(xClickPercent * 9) / 3);
             int yThird = Mathf.FloorToInt((int)(yClickPercent * 9) / 3);
 
-            Debug.Log("xThird: " + xThird + ", yThird: " + yThird);
-
             switch (xThird)
             {
                 case 0:
@@ -106,7 +104,6 @@ namespace Tetromino.Scripts.Gameplay
                         case 1:
                             GameManager.Instance.HandleInputActions(Action.RotateClockwise);
                             break;
-
 
                         //top right third
                         case 2:

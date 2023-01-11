@@ -20,9 +20,9 @@ namespace Tetrified.Scripts.Gameplay
 
         //time to spawn another board increases each time, this is the initial delay.
         [SerializeField]
-        private float _baseTimeToSpawnExtraBoard = 15;
+        private float _baseTimeToSpawnExtraBoard = 30;
 
-        private const float _boardSpawnTimeScalar = 2.0f;
+        private const float _boardSpawnTimeScalar = 1.2f;
         private float _currTimeToSpawnBoard;
 
         private float _timeSinceBoardSpawned;
