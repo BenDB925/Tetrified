@@ -28,7 +28,7 @@ namespace Tetrified.Scripts.Gameplay
         private float _timeSinceBoardSpawned;
 
         [SerializeField]
-        private float _speedAccel = 0.1f;
+        private float _speedAccel = 0.05f;
 
         private float _currSpeed = 1;
 

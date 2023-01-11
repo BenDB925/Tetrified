@@ -31,7 +31,7 @@ namespace Tetrified.Scripts.TetrominoLoading
         private void LoadShapesFromJSON(string fileName)
         {
             // Read the JSON file and parse the contents
-            string json = File.ReadAllText(fileName);
+            string json = Resources.Load<TextAsset>(fileName).text;
             TetrominoShapeList tetrominoShapeList = Newtonsoft.Json.JsonConvert.DeserializeObject<TetrominoShapeList>(json);
 
             _allPotentialShapes = new TetrominoData[tetrominoShapeList.tetrominoShapes.Length];

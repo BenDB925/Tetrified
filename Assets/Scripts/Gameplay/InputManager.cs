@@ -41,17 +41,7 @@ namespace Tetromino.Scripts.Gameplay
                 }
             }
 
-            CheckForTouchInputs();
             CheckForMouseInputs();
-        }
-
-        private void CheckForTouchInputs()
-        {
-            if (Input.touchCount > 0)
-            {
-                Vector2 touchPos = Input.GetTouch(0).position;
-                HandleInput(touchPos);
-            }
         }
 
         private void CheckForMouseInputs()

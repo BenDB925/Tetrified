@@ -31,7 +31,7 @@ namespace Tetrified.Scripts.Utility
             if (File.Exists(_keybindsFilePath))
             {
                 // Read the contents of the file
-                string json = File.ReadAllText(_keybindsFilePath);
+                string json = Resources.Load<TextAsset>(_keybindsFilePath).text;
 
                 // Deserialize the JSON data into a dictionary
                 Dictionary<string, KeyCode> keybinds = JsonConvert.DeserializeObject<Dictionary<string, KeyCode>>(json);
